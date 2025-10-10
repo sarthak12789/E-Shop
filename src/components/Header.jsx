@@ -1,0 +1,116 @@
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { setCategory } from "../store/categorySlice";
+import { toggleTheme } from "../store/themeSlice";
+import Cart from "./Cart";
+
+const Header = () => {
+  const selectedCategory = useSelector((state) => state.category.selectedCategory);
+  const darkMode = useSelector((state) => state.theme.darkMode);
+  const cartItems = useSelector((state) => state.cart.items);
+  const dispatch = useDispatch();
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+
+  const handleCategoryClick = (cat) => {
+    const lowerCat = cat.toLowerCase().replace(" ", "");
+    dispatch(setCategory(lowerCat));
+    setMenuOpen(false);
+
+    const section = document.getElementById(lowerCat);
+    if (section) section.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <header className="relative bg-white dark:bg-gray-900 shadow-lg transition-colors duration-500">
+      <nav className="container mx-auto flex justify-between items-center py-4 px-6">
+        <div
+  className="text-2xl font-serif text-yellow-500 cursor-pointer select-none hover:scale-105 transition-transform"
+  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+>
+  🛍️ E-Shop
+</div>
+        {/* Desktop Menu */}
+        <ul className="hidden md:flex space-x-8 font-medium text-gray-700 dark:text-gray-200">
+          {["Electronics", "Jewelery", "Clothes", "Top Items"].map((cat) => {
+            const lowerCat = cat.toLowerCase().replace(" ", "");
+            const isActive = selectedCategory === lowerCat;
+            return (
+              <li
+                key={cat}
+                onClick={() => handleCategoryClick(cat)}
+                className={`cursor-pointer relative group transition-all hover:text-yellow-500 ${
+                  isActive ? "text-yellow-500 font-bold" : ""
+                }`}
+              >
+                {cat}
+                {isActive && (
+                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-yellow-500 rounded-full animate-pulse"></span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* Right Section */}
+        <div className="flex items-center space-x-4">
+          {/* Theme Toggle */}
+          <button
+            onClick={() => dispatch(toggleTheme())}
+            className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-full shadow-md hover:scale-105 transition-transform duration-200"
+          >
+            {darkMode ? "Light" : "Dark"}
+          </button>
+
+          {/* Cart Button */}
+          <button
+            onClick={() => setCartOpen(!cartOpen)}
+            className="relative bg-yellow-400 text-white px-3 py-1 rounded-full shadow-lg hover:scale-105 transition-transform duration-200"
+          >
+            🛒
+            {cartItems.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-xs text-white px-1.5 py-0.5 rounded-full animate-pulse">
+                {cartItems.length}
+              </span>
+            )}
+          </button>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            className="md:hidden text-3xl font-bold focus:outline-none hover:text-yellow-500 transition-colors"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? "×" : "☰"}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <ul className="flex flex-col bg-gray-100 dark:bg-gray-800 md:hidden px-6 py-4 space-y-3 text-gray-700 dark:text-gray-200 font-medium transition-colors duration-500 rounded-b-lg shadow-lg">
+          {["Electronics", "Jewelery", "Clothes", "Top Items"].map((cat) => {
+            const lowerCat = cat.toLowerCase().replace(" ", "");
+            const isActive = selectedCategory === lowerCat;
+            return (
+              <li
+                key={cat}
+                onClick={() => handleCategoryClick(cat)}
+                className={`cursor-pointer hover:text-yellow-500 transition-colors ${
+                  isActive ? "text-yellow-500 font-bold" : ""
+                }`}
+              >
+                {cat}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {/* Cart Dropdown */}
+      {cartOpen && <Cart onClose={() => setCartOpen(false)} />}
+    </header>
+  );
+};
+
+export default Header;

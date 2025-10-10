@@ -1,0 +1,98 @@
+import React, { useEffect, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { removeFromCart, clearCart } from "../store/cartSlice";
+
+const Cart = ({ onClose }) => {
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
+  const cartRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (cartRef.current && !cartRef.current.contains(e.target)) onClose();
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [onClose]);
+
+  const total = cartItems.reduce((sum, item) => sum + item.price, 0);
+
+  const handlePlaceOrder = () => {
+    if (cartItems.length === 0) return;
+    alert(`Order placed! Total: $${total.toFixed(2)}`);
+    dispatch(clearCart());
+    onClose();
+  };
+
+  return (
+    <div
+      ref={cartRef}
+      className="absolute right-4 top-16 w-80 bg-white dark:bg-gray-900 shadow-2xl rounded-xl p-4 z-50 transition-transform transform scale-100"
+    >
+      <h2 className="text-xl font-bold font-serif mb-4 text-gray-900 dark:text-gray-100">
+        Your Cart
+      </h2>
+
+      {cartItems.length === 0 ? (
+        <p className="text-gray-600 dark:text-gray-300 text-sm">Cart is empty</p>
+      ) : (
+        <>
+          {/* Scrollable items */}
+          <div className="space-y-4 max-h-80 overflow-y-auto pr-2 cart-scroll">
+            {cartItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2"
+              >
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-12 h-12 object-contain rounded"
+                />
+                <div className="flex-1 ml-3">
+                  <p className="text-sm font-medium font-sans text-gray-800 dark:text-gray-100 line-clamp-2">
+                    {item.title}
+                  </p>
+                  <p className="text-sm font-sans text-gray-600 dark:text-gray-300">
+                    ${item.price}
+                  </p>
+                </div>
+                <button
+                  onClick={() => dispatch(removeFromCart(item.id))}
+                  className="text-red-500 hover:text-red-600 text-sm"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Total & Place Order */}
+          <div className="mt-4 border-t border-gray-200 dark:border-gray-700 pt-3">
+            <div className="flex justify-between items-center mb-3">
+              <span className="font-semibold font-sans text-gray-900 dark:text-gray-100">
+                Total:
+              </span>
+              <span className="font-bold font-sans text-yellow-500">
+                ${total.toFixed(2)}
+              </span>
+            </div>
+            <button
+              onClick={handlePlaceOrder}
+              disabled={cartItems.length === 0}
+              className={`w-full py-2 rounded-xl text-white font-semibold transition-transform duration-200 ${
+                cartItems.length === 0
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-green-500 hover:bg-green-600 transform hover:scale-105"
+              }`}
+            >
+              Place Order
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default Cart;
