@@ -28,6 +28,7 @@ npm run dev
 - Product data is locally seeded in `src/store/productSlice.js` for reliability and speed.
 - Detail pages open in a new tab by design (as requested). Suggestions on the detail page also open in a new tab.
 - Filters are memoized via selectors for performance and scalability.
+- Deployment (Vercel): Added `vercel.json` rewrite so deep links like `/product/air-jordan` resolve to the SPA entry instead of 404.
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
