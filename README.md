@@ -1,3 +1,33 @@
+# Shoes World (E-Shop)
+
+A modern, responsive shoes-only storefront built with React, Redux Toolkit, React Router, and Tailwind CSS.
+
+## Features
+
+- Shoes-only catalog with Men, Women, and Kids sections
+- Search across brand, title, and description
+- Filter by brand (multi-select) and price range
+- Sort by price (Low to High / High to Low)
+- Product Detail page in a new tab with full description and suggestions
+- Add/Remove from Cart with a quick cart dropdown
+<!-- Theme toggle removed -->
+- Sticky, responsive header and smooth section navigation
+
+## Getting started
+
+1. Install dependencies
+2. Start the dev server
+
+```
+npm install
+npm run dev
+```
+
+## Notes
+
+- Product data is locally seeded in `src/store/productSlice.js` for reliability and speed.
+- Detail pages open in a new tab by design (as requested). Suggestions on the detail page also open in a new tab.
+- Filters are memoized via selectors for performance and scalability.
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

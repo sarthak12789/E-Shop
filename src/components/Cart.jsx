@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { removeFromCart, clearCart } from "../store/cartSlice";
+import SmartImage from './SmartImage';
 
 const Cart = ({ onClose }) => {
   const dispatch = useDispatch();
@@ -15,7 +16,11 @@ const Cart = ({ onClose }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
-  const total = cartItems.reduce((sum, item) => sum + item.price, 0);
+  const priceOf = (item) => {
+    const d = item?.offers?.[0]?.value || 0;
+    return Number((item.price * (1 - d / 100)).toFixed(2));
+  };
+  const total = cartItems.reduce((sum, item) => sum + priceOf(item), 0);
 
   const handlePlaceOrder = () => {
     if (cartItems.length === 0) return;
@@ -44,18 +49,25 @@ const Cart = ({ onClose }) => {
                 key={item.id}
                 className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2"
               >
-                <img
-                  src={item.image}
+                <SmartImage
+                  src={item.images?.[0] || item.image}
                   alt={item.title}
-                  className="w-12 h-12 object-contain rounded"
+                  className="w-12 h-12 rounded"
+                  fit="contain"
+                  bgClass="bg-white"
                 />
                 <div className="flex-1 ml-3">
                   <p className="text-sm font-medium font-sans text-gray-800 dark:text-gray-100 line-clamp-2">
                     {item.title}
                   </p>
-                  <p className="text-sm font-sans text-gray-600 dark:text-gray-300">
-                    ${item.price}
-                  </p>
+                  {item?.offers?.length ? (
+                    <div className="text-sm">
+                      <span className="text-yellow-600 font-semibold">${priceOf(item).toFixed(2)}</span>
+                      <span className="text-gray-400 line-through ml-2 text-xs">${item.price.toFixed(2)}</span>
+                    </div>
+                  ) : (
+                    <p className="text-sm font-sans text-gray-600 dark:text-gray-300">${item.price.toFixed(2)}</p>
+                  )}
                 </div>
                 <button
                   onClick={() => dispatch(removeFromCart(item.id))}

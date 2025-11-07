@@ -1,29 +1,30 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Provider, useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
 import { store } from './store';
 import App from './App';
 import './index.css';
+import { hydrateCart } from './store/cartSlice';
 
-// ThemeWrapper ensures <html> has 'dark' class
-const ThemeWrapper = ({ children }) => {
-  const darkMode = useSelector(state => state.theme.darkMode);
-
-  useEffect(() => {
-    if (darkMode) document.documentElement.classList.add('dark');
-    else document.documentElement.classList.remove('dark');
-  }, [darkMode]);
-
-  return children;
-};
-
-const Root = () => (
+export const Root = () => (
   <Provider store={store}>
-    <ThemeWrapper>
-      <App />
-    </ThemeWrapper>
+    <App />
   </Provider>
 );
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<Root />);
+
+// Cross-tab sync using storage events
+window.addEventListener('storage', (e) => {
+  if (e.key === 'eshop_state' && e.newValue) {
+    try {
+      const parsed = JSON.parse(e.newValue);
+      if (parsed.cart?.items) {
+        store.dispatch(hydrateCart(parsed.cart.items));
+      }
+    } catch {
+      // ignore parse errors
+    }
+  }
+});

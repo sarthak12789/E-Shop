@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCategory } from "../store/categorySlice";
-import { toggleTheme } from "../store/themeSlice";
+import { setGender } from "../store/filterSlice";
 import Cart from "./Cart";
 
 const Header = () => {
   const selectedCategory = useSelector((state) => state.category.selectedCategory);
-  const darkMode = useSelector((state) => state.theme.darkMode);
   const cartItems = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
 
@@ -14,28 +13,30 @@ const Header = () => {
   const [cartOpen, setCartOpen] = useState(false);
 
   const handleCategoryClick = (cat) => {
-    const lowerCat = cat.toLowerCase().replace(" ", "");
-    dispatch(setCategory(lowerCat));
+    const lowerCat = cat.toLowerCase();
+    const key = lowerCat.replace(" ", "");
+    dispatch(setCategory(key));
+    dispatch(setGender(key));
     setMenuOpen(false);
 
-    const section = document.getElementById(lowerCat);
+    const section = document.getElementById(key);
     if (section) section.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <header className="relative bg-white dark:bg-gray-900 shadow-lg transition-colors duration-500">
+    <header className="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur shadow-lg transition-colors duration-500">
       <nav className="container mx-auto flex justify-between items-center py-4 px-6">
         <div
   className="text-2xl font-serif text-yellow-500 cursor-pointer select-none hover:scale-105 transition-transform"
   onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
 >
-  🛍️ E-Shop
+  � Shoes World
 </div>
         {/* Desktop Menu */}
         <ul className="hidden md:flex space-x-8 font-medium text-gray-700 dark:text-gray-200">
-          {["Electronics", "Jewelery", "Clothes", "Top Items"].map((cat) => {
-            const lowerCat = cat.toLowerCase().replace(" ", "");
-            const isActive = selectedCategory === lowerCat;
+          {["All", "Men", "Women", "Kids"].map((cat) => {
+            const key = cat.toLowerCase();
+            const isActive = selectedCategory === key;
             return (
               <li
                 key={cat}
@@ -55,14 +56,6 @@ const Header = () => {
 
         {/* Right Section */}
         <div className="flex items-center space-x-4">
-          {/* Theme Toggle */}
-          <button
-            onClick={() => dispatch(toggleTheme())}
-            className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-full shadow-md hover:scale-105 transition-transform duration-200"
-          >
-            {darkMode ? "Light" : "Dark"}
-          </button>
-
           {/* Cart Button */}
           <button
             onClick={() => setCartOpen(!cartOpen)}
@@ -89,9 +82,9 @@ const Header = () => {
       {/* Mobile Menu */}
       {menuOpen && (
         <ul className="flex flex-col bg-gray-100 dark:bg-gray-800 md:hidden px-6 py-4 space-y-3 text-gray-700 dark:text-gray-200 font-medium transition-colors duration-500 rounded-b-lg shadow-lg">
-          {["Electronics", "Jewelery", "Clothes", "Top Items"].map((cat) => {
-            const lowerCat = cat.toLowerCase().replace(" ", "");
-            const isActive = selectedCategory === lowerCat;
+          {["All", "Men", "Women", "Kids"].map((cat) => {
+            const key = cat.toLowerCase();
+            const isActive = selectedCategory === key;
             return (
               <li
                 key={cat}

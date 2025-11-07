@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  selectedCategory: 'electronics', // default category
+  selectedCategory: 'all', // 'all' | 'men' | 'women' | 'kids'
 };
 
 const categorySlice = createSlice({
